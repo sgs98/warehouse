@@ -21,7 +21,7 @@ import java.util.List;
  * @data 2020/1/18
  */
 @RestController
-@RequestMapping("notice")
+@RequestMapping("api/notice")
 public class NoticeController {
     @Autowired
     private NoticeService noticeService;

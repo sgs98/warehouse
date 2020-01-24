@@ -48,7 +48,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements De
     @Override
     public Dept updateDept(Dept dept) {
         this.deptMapper.updateById(dept);
-        return dept;
+        return this.deptMapper.selectById(dept.getId());
     }
 
     @Override

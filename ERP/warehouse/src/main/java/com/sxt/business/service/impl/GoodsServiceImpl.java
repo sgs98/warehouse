@@ -6,9 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sxt.business.domain.Provider;
 import com.sxt.business.service.ProviderService;
 import com.sxt.business.vo.GoodsVo;
+import com.sxt.system.common.Constant;
 import com.sxt.system.common.DataGridView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.Serializable;
@@ -51,24 +55,45 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         return new DataGridView(page.getTotal(),page.getRecords());
     }
-
+    @CachePut(cacheNames="com.sxt.business.service.impl.GoodsServiceImpl",key="#result.id")
     @Override
     public Goods saveGoods(Goods goods) {
         this.goodsMapper.insert(goods);
-        return goods;
+        return this.goodsMapper.selectById(goods.getId());
     }
-
+    @CachePut(cacheNames="com.sxt.business.service.impl.GoodsServiceImpl",key="#result.id")
     @Override
     public Goods updateGoods(Goods goods) {
         this.goodsMapper.updateById(goods);
-        return goods;
+        return this.goodsMapper.selectById(goods.getId());
     }
 
+    @Override
+    public DataGridView getAllAvailableGoods() {
+        QueryWrapper<Goods> qw=new QueryWrapper<>();
+        qw.eq("available", Constant.AVAILABLE_TRUE);
+        List<Goods> goods = this.goodsMapper.selectList(qw);
+        return new DataGridView(goods);
+    }
+
+    @Override
+    public DataGridView getGoodsByProviderId(Integer providerid) {
+        if(null==providerid){
+            return new DataGridView();
+        }
+        QueryWrapper<Goods> qw=new QueryWrapper<>();
+        qw.eq("available", Constant.AVAILABLE_TRUE);
+        qw.eq("providerid",providerid);
+        List<Goods> goods = this.goodsMapper.selectList(qw);
+        return new DataGridView(goods);
+    }
+
+    @Cacheable(cacheNames="com.sxt.business.service.impl.GoodsServiceImpl",key="#id")
     @Override
     public Goods getById(Serializable id) {
         return super.getById(id);
     }
-
+    @CacheEvict(cacheNames="com.sxt.business.service.impl.GoodsServiceImpl",key="#id")
     @Override
     public boolean removeById(Serializable id) {
         return super.removeById(id);

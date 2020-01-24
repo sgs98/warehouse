@@ -1,10 +1,10 @@
 server:
-  port: 8080
+  port: 8050
 spring:
   datasource: #数据源配置
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/layuiminierp?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
-    username: root
+    url: jdbc:mysql://47.95.223.144:3306/erpsystem?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
+    username: erpsystem
     password: 123456
     druid:
       max-active: 10
@@ -51,18 +51,17 @@ shiro:
   login-url: /index.html
   unauthorized-url: /unauthorized.html
   anon-urls:
-    - /**
-#    - /api/login/doLogin*
-#    - /api/druid/**
-#    - /api/swagger-ui.html
-#    - /api/webjars/**
-#    - /api/swagger-resources/**
-#    - /api/v2/**
-#    - /api/login/captcha
-#    - /api/login/checkLogin
+    - /api/login/doLogin*
+    - /api/druid/**
+    - /api/swagger-ui.html
+    - /api/webjars/**
+    - /api/swagger-resources/**
+    - /api/v2/**
+    - /api/login/captcha
+    - /api/login/checkLogin
   logout-url: /api/login/logout*
   authc-urls:
-#    - /**
+    - /**
 #mybatisplus的配置
 mybatis-plus:
   configuration:

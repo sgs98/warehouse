@@ -1,5 +1,7 @@
 package com.sxt.system.controller;
 
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.ShearCaptcha;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sxt.system.common.ActiveUser;
 import com.sxt.system.common.Constant;
@@ -17,24 +19,32 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author song
  * @data 2020/1/17
  */
 @Controller
-@RequestMapping("login")
+@RequestMapping("api/login")
 public class LoginController {
     @Autowired
     private MenuService menuService;
     @Autowired
     private LoginfoService loginfoService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     /**
      * 用户登陆
@@ -42,37 +52,44 @@ public class LoginController {
     @RequestMapping("doLogin")
     @ResponseBody
     public ResultObj doLogin(String loginname, String password, String keyCode, String captcha, HttpServletRequest request){
-          try{
-              Subject subject= SecurityUtils.getSubject();
-              UsernamePasswordToken loginToken=new UsernamePasswordToken(loginname,password);
-              subject.login(loginToken);
-              //得到shiro的sessionid==token
-              String token = subject.getSession().getId().toString();
-              //写入登陆日志
-              ActiveUser activeUser= (ActiveUser) subject.getPrincipal();
-              User user = activeUser.getUser();
-              Loginfo loginfo = new Loginfo();
-              loginfo.setLoginname(user.getName()+"-"+user.getLoginname());
-              loginfo.setLoginip(request.getRemoteAddr());
-              loginfo.setLogintime(new Date());
-              loginfoService.save(loginfo);
-              //权限编码
-              List<String> permissions = activeUser.getPermissions();
-              Map<String,Object> map=new HashMap<>();
-              map.put("username",user.getName());
-              map.put("usertype",user.getType());
-              map.put("token",token);
-              map.put("permissions",permissions);
-
-              return new ResultObj(200,"登陆成功",map);
-          }catch (AuthenticationException e){
-           //   e.printStackTrace();
-              return new ResultObj(-1,"用户或密码不正确");
-          }
+        try {
+            ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
+            String code = opsForValue.get(keyCode);
+            if(null==code){
+                return new ResultObj(-1,"验证码过期");
+            }else{
+                if(code.equalsIgnoreCase(captcha)){
+                    Subject subject= SecurityUtils.getSubject();
+                    UsernamePasswordToken loginToken=new UsernamePasswordToken(loginname,password);
+                    subject.login(loginToken);
+                    //ActiveUser activeUser= (ActiveUser) subject.getPrincipal();
+                    //得到shiro的sessionid==token
+                    String token = subject.getSession().getId().toString();
+                    //写入登陆日志
+                    ActiveUser activeUser= (ActiveUser) subject.getPrincipal();
+                    User user=activeUser.getUser();
+                    Loginfo loginfo=new Loginfo();
+                    loginfo.setLoginname(user.getName()+"-"+user.getLoginname());
+                    loginfo.setLoginip(request.getRemoteAddr());
+                    loginfo.setLogintime(new Date());
+                    loginfoService.save(loginfo);
+                    List<String> permissions = activeUser.getPermissions();
+                    Map<String,Object> map=new HashMap<>();
+                    map.put("token",token);
+                    map.put("permissions",permissions);
+                    map.put("usertype",user.getType());
+                    map.put("username",user.getName());
+                    return new ResultObj(200,"登陆成功",map);
+                }else{
+                    return new ResultObj(-1,"验证码出错");
+                }
+            }
+        }catch (AuthenticationException e){
+            e.printStackTrace();
+            return new ResultObj(-1,"用户或密码不正确");
+        }
     }
-    /**
-     * 返回验证码
-     */
+
 
     /**
      * 加载所有菜单【顶部菜单和左侧菜单】
@@ -123,5 +140,19 @@ public class LoginController {
         }else{
             return ResultObj.UN_LOGIN;
         }
+    }
+    /**
+     * 验证码  打
+     *
+     * redis   key value
+     */
+    @RequestMapping("captcha")
+    public void captcha(HttpServletResponse response, String codeKey) throws IOException {
+        ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(100, 38, 4, 4);
+        String code = captcha.getCode();
+        ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
+        opsForValue.set(codeKey,code);
+        opsForValue.getOperations().expire(codeKey,60, TimeUnit.SECONDS);
+        captcha.write(response.getOutputStream());
     }
 }

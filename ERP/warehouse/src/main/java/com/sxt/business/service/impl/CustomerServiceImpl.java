@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sxt.business.vo.CustomerVo;
+import com.sxt.system.common.Constant;
 import com.sxt.system.common.DataGridView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.Serializable;
@@ -57,6 +60,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      * @param customer
      * @return
      */
+    @CacheEvict(cacheNames="com.sxt.business.service.impl.CustomerServiceImpl",key="#result.id")
     @Override
     public Customer saveCustomer(Customer customer) {
         this.customerMapper.insert(customer);
@@ -68,10 +72,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      * @param customer
      * @return
      */
+    @CachePut(cacheNames="com.sxt.business.service.impl.CustomerServiceImpl",key="#result.id")
     @Override
     public Customer updateCustomer(Customer customer) {
         this.customerMapper.updateById(customer);
-        return customer;
+        return this.customerMapper.selectById(customer.getId());
+    }
+
+    @Override
+    public DataGridView getAllAvailableCustomer() {
+        QueryWrapper<Customer> qw=new QueryWrapper<>();
+        qw.eq("available", Constant.AVAILABLE_TRUE);
+        return new DataGridView(this.customerMapper.selectList(qw));
     }
 
     /**
@@ -79,6 +91,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      * @param id
      * @return
      */
+    @CacheEvict(cacheNames="com.sxt.business.service.impl.CustomerServiceImpl",key="#id")
     @Override
     public boolean removeById(Serializable id) {
         return super.removeById(id);

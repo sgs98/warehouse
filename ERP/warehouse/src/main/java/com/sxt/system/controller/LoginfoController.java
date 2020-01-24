@@ -14,7 +14,7 @@ import java.util.List;
  * @author song
  * @data 2020/1/18
  */
-@RequestMapping("loginfo")
+@RequestMapping("api/loginfo")
 @RestController
 public class LoginfoController {
     @Autowired

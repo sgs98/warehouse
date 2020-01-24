@@ -20,7 +20,7 @@ import java.util.Map;
  * @data 2020/1/22
  */
 @RestController
-@RequestMapping("file")
+@RequestMapping("api/file")
 public class FileController {
     @Autowired
     private UploadService uploadService;

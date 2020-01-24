@@ -1,5 +1,7 @@
 package com.sxt.business.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,6 +9,7 @@ import com.sxt.business.domain.Customer;
 import com.sxt.business.vo.ProviderVo;
 import com.sxt.system.common.Constant;
 import com.sxt.system.common.DataGridView;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,6 +18,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -59,8 +63,10 @@ public class ProviderServiceImpl extends ServiceImpl<ProviderMapper, Provider> i
     @CachePut(cacheNames = "com.sxt.business.service.impl.ProviderServiceImpl",key="#result.id")
     @Override
     public Provider updateProvider(Provider provider) {
+        //Provider selectById = this.providerMapper.selectById(provider.getId());
+        //BeanUtil.copyProperties(provider,selectById, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
         providerMapper.updateById(provider);
-        return provider;
+        return this.providerMapper.selectById(provider.getId());
     }
 
     @Override

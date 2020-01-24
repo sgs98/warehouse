@@ -7,6 +7,7 @@ import com.sxt.system.common.Constant;
 import com.sxt.system.common.ResultObj;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +20,7 @@ import java.util.List;
  * @data 2020/1/22
  */
 @RestController
-@RequestMapping("customer")
+@RequestMapping("api/customer")
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
@@ -96,5 +97,11 @@ public class CustomerController {
             return ResultObj.UPDATE_ERROR;
         }
     }
-
+    /**
+     * 查询所有可用的客户
+     */
+    @GetMapping("getAllAvailableCustomer")
+    public Object getAllAvailableCustomer(){
+        return this.customerService.getAllAvailableCustomer();
+    }
 }

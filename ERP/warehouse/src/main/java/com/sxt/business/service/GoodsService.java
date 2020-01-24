@@ -32,4 +32,8 @@ public interface GoodsService extends IService<Goods>{
      * @return
      */
     Goods updateGoods(Goods goods);
+
+    DataGridView getAllAvailableGoods();
+
+    DataGridView getGoodsByProviderId(Integer providerid);
 }

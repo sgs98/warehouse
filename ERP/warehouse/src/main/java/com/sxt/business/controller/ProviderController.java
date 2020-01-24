@@ -18,7 +18,7 @@ import java.util.List;
  * @data 2020/1/22
  */
 @RestController
-@RequestMapping("provider")
+@RequestMapping("api/provider")
 public class ProviderController {
     @Autowired
     private ProviderService providerService;

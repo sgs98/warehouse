@@ -31,4 +31,6 @@ public interface CustomerService extends IService<Customer>{
      * @return
      */
         Customer updateCustomer(Customer customer);
+
+        DataGridView getAllAvailableCustomer();
 }

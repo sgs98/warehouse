@@ -19,7 +19,7 @@ import java.util.List;
  * @data 2020/1/20
  */
 @RestController
-@RequestMapping("menu")
+@RequestMapping("api/menu")
 public class MenuController {
     @Autowired
     private MenuService menuService;

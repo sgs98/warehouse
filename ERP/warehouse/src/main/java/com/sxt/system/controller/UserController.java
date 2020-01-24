@@ -20,7 +20,7 @@ import java.util.List;
  * @data 2020/1/20
  */
 @RestController
-@RequestMapping("user")
+@RequestMapping("api/user")
 public class UserController {
     @Autowired
     private UserService userService;

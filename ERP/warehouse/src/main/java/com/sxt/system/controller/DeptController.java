@@ -21,7 +21,7 @@ import java.util.Map;
  * @author song
  * @data 2020/1/19
  */
-@RequestMapping("dept")
+@RequestMapping("api/dept")
 @RestController
 public class DeptController {
     @Autowired
