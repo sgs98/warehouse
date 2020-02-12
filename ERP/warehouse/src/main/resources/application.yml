@@ -19,6 +19,7 @@ spring:
 #        allow:
 #        deny:
         url-pattern: "/druid/*"
+        allow: 47.95.110.151
       web-stat-filter:
         enabled: true
         url-pattern: "/druid/**"
