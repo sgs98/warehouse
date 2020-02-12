@@ -107,7 +107,7 @@ public class LoginController {
         List<Menu> menus=null;
 
         if(user.getType().equals(Constant.USER_TYPE_SUPER)){//超级管理员
-            menus=menuService.queryAllMenuForList();
+            menus=menuService.queryMenuForListByUsersId(user.getId());
         }else{
             menus=menuService.queryMenuForListByUsersId(user.getId());
         }

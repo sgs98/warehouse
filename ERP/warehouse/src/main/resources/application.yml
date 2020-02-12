@@ -3,13 +3,13 @@ server:
 spring:
   datasource: #数据源配置
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.95.223.144:3306/erpsystem?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://47.95.110.151:3389/erpsystem?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
     username: erpsystem
     password: 123456
     druid:
       max-active: 10
       min-idle: 5
-      max-wait: 5000
+      max-wait: 10000
       initial-size: 5
       validation-query: select 1
       stat-view-servlet:
