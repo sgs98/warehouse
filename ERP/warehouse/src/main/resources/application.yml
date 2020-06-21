@@ -3,7 +3,7 @@ server:
 spring:
   datasource: #数据源配置
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.95.110.151:3389/erpsystem?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3389/erpsystem?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=UTC
     username: erpsystem
     password: 123456
     druid:
@@ -34,7 +34,7 @@ spring:
     time-zone: GMT+8
   #redis
   redis:
-    host: www.swordman.top
+    host: 127.0.0.1
     password: 123456
     port: 6379
     jedis:
@@ -78,9 +78,9 @@ fdfs:
     width: 100
     height: 100
   tracker-list:          # tracker服务配置地址列表
-    - www.swordman.top:22122
+    - 127.0.0.1:22122
 upload:
-  base-url: www.swordman.top:8010/
+  base-url: 127.0.0.1:8010/
   allow-types:
     - image/jpeg
     - image/png
